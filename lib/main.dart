@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_painter/custom_forms.dart';
 import 'package:flutter_custom_painter/predefined_forms.dart';
 import 'package:flutter_custom_painter/utils.dart';
 
@@ -55,7 +56,11 @@ class MyHomePage extends StatelessWidget {
               ElevatedButton(
                 child: const Text('Custom forms with Path'),
                 onPressed: () {
-
+                  Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const CustomForms(),
+                      )
+                  );
                 },
               ),
               ElevatedButton(
