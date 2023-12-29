@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_painter/predefined_forms.dart';
 import 'package:flutter_custom_painter/utils.dart';
 
 void main() {
@@ -22,17 +23,11 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
 
   const MyHomePage({super.key, required this.title});
 
   final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
@@ -40,14 +35,43 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Padding(
         padding: const EdgeInsets.all(pagePadding),
-        child: Column(
-          children: [
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              ElevatedButton(
+                child: const Text('Predefined forms'),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const PredefinedForms(),
+                    )
+                  );
+                },
+              ),
+              ElevatedButton(
+                child: const Text('Custom forms with Path'),
+                onPressed: () {
 
-          ],
+                },
+              ),
+              ElevatedButton(
+                child: const Text('Draw a house'),
+                onPressed: () {
+
+                },
+              ),
+              ElevatedButton(
+                child: const Text('Draw a clock'),
+                onPressed: () {
+
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
