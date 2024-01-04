@@ -82,6 +82,17 @@ class ClockPainter extends CustomPainter {
       lineIndex++;
     }
 
+    // draw the clock
+    final radius = size.width / 2;
+
+    final paintClockCircle = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 2
+      ..style = PaintingStyle.fill;
+
+    Offset center = Offset(size.width / 2, size.height / 2);
+    canvas.drawCircle(center, radius, paintClockCircle);
+
   }
 
   @override
