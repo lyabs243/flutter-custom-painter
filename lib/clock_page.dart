@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 class ClockPage extends StatelessWidget {
@@ -93,6 +95,34 @@ class ClockPainter extends CustomPainter {
     Offset center = Offset(size.width / 2, size.height / 2);
     canvas.drawCircle(center, radius, paintClockCircle);
 
+    // draw the clock numbers
+    canvas.translate(size.width / 2, size.height / 2);
+
+    TextPainter textPainter = TextPainter(
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.center,
+    );
+
+    for (int i = 1; i <= 12; i++) {
+
+      int index = (i + 3) % 12;
+      if (index == 0) index = 12;
+
+      textPainter.text = TextSpan(
+        text: '$index',
+        style: const TextStyle(
+          color: Colors.black,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+      textPainter.layout();
+      double angle = i * 30.0;
+      double x = cos(_getRadians(angle)) * (radius - 30) - textPainter.width / 2;
+      double y = sin(_getRadians(angle)) * (radius - 30) - textPainter.height / 2;
+      textPainter.paint(canvas, Offset(x, y));
+    }
+
   }
 
   @override
@@ -114,6 +144,10 @@ class ClockPainter extends CustomPainter {
     Offset point = Offset(columnIndex * size.width, lineIndex * size.height);
     canvas.drawCircle(point, size.width / 2, paint);
 
+  }
+
+  double _getRadians(double angle) {
+    return angle * pi / 180;
   }
 
 }
