@@ -26,11 +26,51 @@ class PaintHouse extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: HousePainter(
-        title: 'Dash\'s House',
-        color: Theme.of(context).colorScheme.primary
-      ),
+    return Stack(
+      children: [
+        Align(
+          alignment: Alignment.topLeft,
+          child: CustomPaint(
+            painter: HousePainter(
+              title: 'Dash',
+              color: Theme.of(context).colorScheme.primary
+            ),
+            size: const Size(200, 250),
+          ),
+        ),
+        const Positioned(
+          top: 350,
+          left: 0,
+          child: CustomPaint(
+            painter: HousePainter(
+                title: 'Tintin',
+                color: Colors.redAccent
+            ),
+            size: Size(200, 220),
+          ),
+        ),
+        const Positioned(
+          top: 200,
+          right: 0,
+          child: CustomPaint(
+            painter: HousePainter(
+                title: 'Milou',
+                color: Colors.green
+            ),
+            size: Size(200, 220),
+          ),
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: CustomPaint(
+            painter: HousePainter(
+                title: 'Flutter',
+                color: Theme.of(context).colorScheme.secondary
+            ),
+            size: const Size(200, 250),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -140,7 +180,7 @@ class HousePainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     );
     tp.layout();
-    tp.paint(canvas, Offset(size.width / 2 - tp.width / 2, size.height - doorHeight / 1.5 - tp.height / 2));
+    tp.paint(canvas, Offset(size.width / 2 - tp.width / 2, size.height - doorHeight / 1.2 - tp.height / 2));
 
     // the window
     final paintWindow = Paint()
