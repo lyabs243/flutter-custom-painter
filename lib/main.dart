@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_painter/clock_page.dart';
 import 'package:flutter_custom_painter/custom_forms.dart';
 import 'package:flutter_custom_painter/house_page.dart';
 import 'package:flutter_custom_painter/predefined_forms.dart';
@@ -77,7 +78,11 @@ class MyHomePage extends StatelessWidget {
               ElevatedButton(
                 child: const Text('Draw a clock'),
                 onPressed: () {
-
+                  Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ClockPage(),
+                      )
+                  );
                 },
               ),
             ],
