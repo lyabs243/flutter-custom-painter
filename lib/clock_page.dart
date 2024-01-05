@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
@@ -36,9 +37,15 @@ class PaintClock extends StatefulWidget {
 
 class _PaintClockState extends State<PaintClock> {
 
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
+    // update the clock every second
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {});
+    });
   }
 
   @override
@@ -48,6 +55,12 @@ class _PaintClockState extends State<PaintClock> {
       painter: ClockPainter(color: Theme.of(context).colorScheme.primary),
     );
 
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
 }
