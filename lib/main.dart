@@ -4,8 +4,10 @@ import 'package:flutter_custom_painter/custom_forms.dart';
 import 'package:flutter_custom_painter/house_page.dart';
 import 'package:flutter_custom_painter/predefined_forms.dart';
 import 'package:flutter_custom_painter/utils.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 void main() {
+  tz.initializeTimeZones();
   runApp(const MyApp());
 }
 

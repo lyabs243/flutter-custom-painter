@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_painter/model/place_clock.dart';
 
 class ClockPage extends StatelessWidget {
 
@@ -51,8 +52,15 @@ class _PaintClockState extends State<PaintClock> {
   @override
   Widget build(BuildContext context) {
 
+    PlaceClock place = const PlaceClock(
+      flag: '🇨🇩',
+      color: Color(0xFF0087FF),
+      name: 'Lubumbashi',
+      timeZone: 'Africa/Lubumbashi',
+    );
+
     return CustomPaint(
-      painter: ClockPainter(color: Theme.of(context).colorScheme.primary),
+      painter: ClockPainter(place: place),
     );
 
   }
@@ -67,21 +75,18 @@ class _PaintClockState extends State<PaintClock> {
 
 class ClockPainter extends CustomPainter {
 
-  final Color color;
-  late DateTime _datetime;
+  final PlaceClock place;
 
   ClockPainter({
-    this.color = Colors.blue,
+    required this.place,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
 
-    _datetime = DateTime.now();
-
     // a square container
     final paint = Paint()
-      ..color = color
+      ..color = place.color
       ..strokeWidth = 2
       ..style = PaintingStyle.fill;
 
@@ -152,6 +157,23 @@ class ClockPainter extends CustomPainter {
       ..color = Colors.black;
     canvas.drawPoints(ui.PointMode.points, const [Offset(0, 0)], centerPointPaint);
 
+    // write the country emoji flag at the top under the clock numbers
+    TextSpan span = TextSpan(
+      text: place.flag,
+      style: const TextStyle(
+        color: Colors.black,
+        fontSize: 25,
+      ),
+    );
+
+    TextPainter tp = TextPainter(
+      text: span,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+    tp.layout();
+    tp.paint(canvas, Offset(-tp.width / 2, -radius + 50));
+
   }
 
   @override
@@ -181,7 +203,7 @@ class ClockPainter extends CustomPainter {
 
   /// drawing hour hand
   void _paintHourHand(Canvas canvas, double radius, double strokeWidth) {
-    double angle = _datetime.hour % 12 + _datetime.minute / 60.0 - 3;
+    double angle = place.dateTime.hour % 12 + place.dateTime.minute / 60.0 - 3;
     Offset handOffset = Offset(cos(_getRadians(angle * 30)) * radius,
         sin(_getRadians(angle * 30)) * radius);
     final handPaint = Paint()
@@ -192,7 +214,7 @@ class ClockPainter extends CustomPainter {
 
   /// drawing minute hand
   void _paintMinuteHand(Canvas canvas, double radius, double strokeWidth) {
-    double angle = _datetime.minute - 15.0;
+    double angle = place.dateTime.minute - 15.0;
     Offset handOffset = Offset(cos(_getRadians(angle * 6.0)) * radius,
         sin(_getRadians(angle * 6.0)) * radius);
     final handPaint = Paint()
@@ -204,7 +226,7 @@ class ClockPainter extends CustomPainter {
   /// drawing second hand
   void _paintSecondHand(Canvas canvas, double radius, double strokeWidth) {
 
-    double angle = _datetime.second - 15.0;
+    double angle = place.dateTime.second - 15.0;
     Offset handOffset = Offset(cos(_getRadians(angle * 6.0)) * radius,
         sin(_getRadians(angle * 6.0)) * radius);
     final handPaint = Paint()
