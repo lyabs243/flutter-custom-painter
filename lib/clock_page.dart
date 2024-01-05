@@ -1,5 +1,5 @@
 import 'dart:math';
-
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 class ClockPage extends StatelessWidget {
@@ -55,13 +55,16 @@ class _PaintClockState extends State<PaintClock> {
 class ClockPainter extends CustomPainter {
 
   final Color color;
+  late DateTime _datetime;
 
-  const ClockPainter({
+  ClockPainter({
     this.color = Colors.blue,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+
+    _datetime = DateTime.now();
 
     // a square container
     final paint = Paint()
@@ -123,6 +126,19 @@ class ClockPainter extends CustomPainter {
       textPainter.paint(canvas, Offset(x, y));
     }
 
+    double maxRadius = 150;
+    double maxStroke = 6;
+    _paintHourHand(canvas, maxRadius / 2.5, maxStroke);
+    _paintMinuteHand(canvas, maxRadius / 1.5, maxStroke / 1.4);
+    _paintSecondHand(canvas, maxRadius / 1.2, maxStroke / 3);
+
+    //drawing center point
+    Paint centerPointPaint = Paint()
+      ..strokeWidth = (radius / 12)
+      ..strokeCap = StrokeCap.round
+      ..color = Colors.black;
+    canvas.drawPoints(ui.PointMode.points, const [Offset(0, 0)], centerPointPaint);
+
   }
 
   @override
@@ -148,6 +164,40 @@ class ClockPainter extends CustomPainter {
 
   double _getRadians(double angle) {
     return angle * pi / 180;
+  }
+
+  /// drawing hour hand
+  void _paintHourHand(Canvas canvas, double radius, double strokeWidth) {
+    double angle = _datetime.hour % 12 + _datetime.minute / 60.0 - 3;
+    Offset handOffset = Offset(cos(_getRadians(angle * 30)) * radius,
+        sin(_getRadians(angle * 30)) * radius);
+    final handPaint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = strokeWidth;
+    canvas.drawLine(const Offset(0, 0), handOffset, handPaint);
+  }
+
+  /// drawing minute hand
+  void _paintMinuteHand(Canvas canvas, double radius, double strokeWidth) {
+    double angle = _datetime.minute - 15.0;
+    Offset handOffset = Offset(cos(_getRadians(angle * 6.0)) * radius,
+        sin(_getRadians(angle * 6.0)) * radius);
+    final handPaint = Paint()
+      ..color = Colors.black
+      ..strokeWidth = strokeWidth;
+    canvas.drawLine(const Offset(0, 0), handOffset, handPaint);
+  }
+
+  /// drawing second hand
+  void _paintSecondHand(Canvas canvas, double radius, double strokeWidth) {
+
+    double angle = _datetime.second - 15.0;
+    Offset handOffset = Offset(cos(_getRadians(angle * 6.0)) * radius,
+        sin(_getRadians(angle * 6.0)) * radius);
+    final handPaint = Paint()
+      ..color = Colors.red
+      ..strokeWidth = strokeWidth;
+    canvas.drawLine(const Offset(0, 0), handOffset, handPaint);
   }
 
 }
