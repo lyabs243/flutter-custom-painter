@@ -11,14 +11,12 @@ class ClockPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    double squareSize = MediaQuery.of(context).size.height / 1.8;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Clock Page')),
       body: Center(
         child: Container(
-          width: squareSize,
-          height: squareSize,
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
           padding: const EdgeInsets.all(16),
           child: const PaintClock(),
         ),
@@ -39,6 +37,87 @@ class PaintClock extends StatefulWidget {
 class _PaintClockState extends State<PaintClock> {
 
   Timer? _timer;
+  int _index = 0;
+  List<PlaceClock> places = [
+    const PlaceClock(
+      flag: '🇨🇩',
+      color: Color(0xFF0087FF),
+      name: 'Lubumbashi',
+      timeZone: 'Africa/Lubumbashi',
+    ),
+    const PlaceClock(
+      flag: '🇺🇸',
+      color: Color(0xFFB2293B),
+      name: 'New York',
+      timeZone: 'America/New_York',
+    ),
+    const PlaceClock(
+      flag: '🇳🇬',
+      color: Color(0xFF00814D),
+      name: 'Lagos',
+      timeZone: 'Africa/Lagos',
+    ),
+    const PlaceClock(
+      flag: '🇪🇬',
+      color: Color(0xFFCD1329),
+      name: 'Cairo',
+      timeZone: 'Africa/Cairo',
+    ),
+    const PlaceClock(
+      flag: '🇫🇷',
+      color: Color(0xFF002996),
+      name: 'Paris',
+      timeZone: 'Europe/Paris',
+    ),
+    const PlaceClock(
+      flag: '🇨🇳',
+      color: Color(0xFFD8230E),
+      name: 'Shanghai',
+      timeZone: 'Asia/Shanghai',
+    ),
+    const PlaceClock(
+      flag: '🇧🇷',
+      color: Color(0xFF009B39),
+      name: 'Sao Paulo',
+      timeZone: 'America/Sao_Paulo',
+    ),
+    const PlaceClock(
+      flag: '🇬🇧',
+      color: Color(0xFF00358D),
+      name: 'London',
+      timeZone: 'Europe/London',
+    ),
+    const PlaceClock(
+      flag: '🇯🇵',
+      color: Color(0xFFBC002C),
+      name: 'Tokyo',
+      timeZone: 'Asia/Tokyo',
+    ),
+    const PlaceClock(
+      flag: '🇦🇺',
+      color: Color(0xFF000082),
+      name: 'Sydney',
+      timeZone: 'Australia/Sydney',
+    ),
+    const PlaceClock(
+      flag: '🇮🇳',
+      color: Color(0xFFFF9932),
+      name: 'New Delhi',
+      timeZone: 'Asia/Kolkata',
+    ),
+    const PlaceClock(
+      flag: '🇷🇺',
+      color: Color(0xFFCC2116),
+      name: 'Moscow',
+      timeZone: 'Europe/Moscow',
+    ),
+    const PlaceClock(
+      flag: '🇨🇦',
+      color: Color(0xFFFF0000),
+      name: 'Toronto',
+      timeZone: 'America/Toronto',
+    ),
+  ];
 
   @override
   void initState() {
@@ -52,15 +131,61 @@ class _PaintClockState extends State<PaintClock> {
   @override
   Widget build(BuildContext context) {
 
-    PlaceClock place = const PlaceClock(
-      flag: '🇨🇩',
-      color: Color(0xFF0087FF),
-      name: 'Lubumbashi',
-      timeZone: 'Africa/Lubumbashi',
-    );
+    PlaceClock place = places[_index];
 
-    return CustomPaint(
-      painter: ClockPainter(place: place),
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          height: MediaQuery.of(context).size.height * 0.2,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: GridView.builder(
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                //mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 0.3,
+              ),
+              scrollDirection: Axis.horizontal,
+              itemCount: places.length,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: index == _index ? places[_index].color : Colors.grey[300],
+                      foregroundColor: index == _index ? Colors.white : places[index].color,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text('${places[index].flag} ${places[index].name}'),
+                    onPressed: () {
+                      setState(() {
+                        _index = index;
+                      });
+                    },
+                  ),
+                );
+              },
+            ),
+          )
+        ),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.05),
+        SizedBox(
+          width: MediaQuery.of(context).size.height / 1.8,
+          height: MediaQuery.of(context).size.height / 1.8,
+          child: CustomPaint(
+            painter: ClockPainter(place: place),
+          ),
+        )
+      ],
     );
 
   }
@@ -94,7 +219,7 @@ class ClockPainter extends CustomPainter {
 
     // add some style by drawing  circles
     int lineIndex = 0, columnIndex = 0;
-    while (lineIndex < 5) {
+    while (lineIndex < 6) {
 
       while (columnIndex < 5) {
         _drawStyleCircle(canvas:  canvas, size: const Size(100, 100),
