@@ -34,86 +34,91 @@ class PaintClock extends StatefulWidget {
   State<PaintClock> createState() => _PaintClockState();
 }
 
-class _PaintClockState extends State<PaintClock> {
+class _PaintClockState extends State<PaintClock>  with SingleTickerProviderStateMixin {
 
   Timer? _timer;
   int _index = 0;
+  DateTime _dateTime = DateTime.now();
+  late AnimationController _controller;
+  late Animation<Color?> _animationColor;
+  late Animation<double> _animationDateTime;
+
   List<PlaceClock> places = [
-    const PlaceClock(
+    PlaceClock(
       flag: '🇨🇩',
-      color: Color(0xFF0087FF),
+      color: const Color(0xFF0087FF),
       name: 'Lubumbashi',
       timeZone: 'Africa/Lubumbashi',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇺🇸',
-      color: Color(0xFFB2293B),
+      color: const Color(0xFFB2293B),
       name: 'New York',
       timeZone: 'America/New_York',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇳🇬',
-      color: Color(0xFF00814D),
+      color: const Color(0xFF00814D),
       name: 'Lagos',
       timeZone: 'Africa/Lagos',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇪🇬',
-      color: Color(0xFFCD1329),
+      color: const Color(0xFFCD1329),
       name: 'Cairo',
       timeZone: 'Africa/Cairo',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇫🇷',
-      color: Color(0xFF002996),
+      color: const Color(0xFF002996),
       name: 'Paris',
       timeZone: 'Europe/Paris',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇨🇳',
-      color: Color(0xFFD8230E),
+      color: const Color(0xFFD8230E),
       name: 'Shanghai',
       timeZone: 'Asia/Shanghai',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇧🇷',
-      color: Color(0xFF009B39),
+      color: const Color(0xFF009B39),
       name: 'Sao Paulo',
       timeZone: 'America/Sao_Paulo',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇬🇧',
-      color: Color(0xFF00358D),
+      color: const Color(0xFF00358D),
       name: 'London',
       timeZone: 'Europe/London',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇯🇵',
-      color: Color(0xFFBC002C),
+      color: const Color(0xFFBC002C),
       name: 'Tokyo',
       timeZone: 'Asia/Tokyo',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇦🇺',
-      color: Color(0xFF000082),
+      color: const Color(0xFF000082),
       name: 'Sydney',
       timeZone: 'Australia/Sydney',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇮🇳',
-      color: Color(0xFFFF9932),
+      color: const Color(0xFFFF9932),
       name: 'New Delhi',
       timeZone: 'Asia/Kolkata',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇷🇺',
-      color: Color(0xFFCC2116),
+      color: const Color(0xFFCC2116),
       name: 'Moscow',
       timeZone: 'Europe/Moscow',
     ),
-    const PlaceClock(
+    PlaceClock(
       flag: '🇨🇦',
-      color: Color(0xFFFF0000),
+      color: const Color(0xFFFF0000),
       name: 'Toronto',
       timeZone: 'America/Toronto',
     ),
@@ -126,12 +131,38 @@ class _PaintClockState extends State<PaintClock> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {});
     });
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    )..addListener(() {
+      setState(() {});
+    });
+
+    _animationColor = ColorTween(
+      begin: places[_index].color.withOpacity(0.5),
+      end: places[_index].color,
+    ).animate(_controller);
+
+    _animationDateTime = Tween<double>(
+      begin: places[_index].dateTime.subtract(const Duration(seconds: 1)).millisecondsSinceEpoch.toDouble(),
+      end: places[_index].dateTime.millisecondsSinceEpoch.toDouble(),
+    ).animate(_controller);
+
+    _controller.forward(from: 0);
   }
 
   @override
   Widget build(BuildContext context) {
 
-    PlaceClock place = places[_index];
+    PlaceClock place = places[_index]
+      .. color = _animationColor.value?? places[_index].color;
+    if (_controller.status == AnimationStatus.completed) {
+      _dateTime = places[_index].dateTime;
+    }
+    else {
+      _dateTime = DateTime.fromMillisecondsSinceEpoch(_animationDateTime.value.toInt());
+    }
 
     return Column(
       children: [
@@ -168,8 +199,35 @@ class _PaintClockState extends State<PaintClock> {
                     child: Text('${places[index].flag} ${places[index].name}'),
                     onPressed: () {
                       setState(() {
+                        _animationColor = ColorTween(
+                          begin: places[_index].color,
+                          end: places[index].color,
+                        ).animate(_controller);
+
+                        DateTime previous = DateTime(
+                          places[_index].dateTime.year,
+                          places[_index].dateTime.month,
+                          places[_index].dateTime.day,
+                          places[_index].dateTime.hour,
+                          places[_index].dateTime.minute,
+                          places[_index].dateTime.second,
+                        );
+                        DateTime current = DateTime(
+                          places[index].dateTime.year,
+                          places[index].dateTime.month,
+                          places[index].dateTime.day,
+                          places[index].dateTime.hour,
+                          places[index].dateTime.minute,
+                          places[index].dateTime.second,
+                        );
+
+                        _animationDateTime = Tween<double>(
+                          begin: previous.millisecondsSinceEpoch.toDouble(),
+                          end: current.millisecondsSinceEpoch.toDouble(),
+                        ).animate(_controller);
                         _index = index;
                       });
+                      _controller.forward(from: 0,);
                     },
                   ),
                 );
@@ -182,7 +240,7 @@ class _PaintClockState extends State<PaintClock> {
           width: MediaQuery.of(context).size.height / 1.8,
           height: MediaQuery.of(context).size.height / 1.8,
           child: CustomPaint(
-            painter: ClockPainter(place: place),
+            painter: ClockPainter(place: place, dateTime: _dateTime),
           ),
         )
       ],
@@ -193,6 +251,7 @@ class _PaintClockState extends State<PaintClock> {
   @override
   void dispose() {
     _timer?.cancel();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -201,9 +260,11 @@ class _PaintClockState extends State<PaintClock> {
 class ClockPainter extends CustomPainter {
 
   final PlaceClock place;
+  final DateTime dateTime;
 
   ClockPainter({
     required this.place,
+    required this.dateTime,
   });
 
   @override
@@ -328,7 +389,7 @@ class ClockPainter extends CustomPainter {
 
   /// drawing hour hand
   void _paintHourHand(Canvas canvas, double radius, double strokeWidth) {
-    double angle = place.dateTime.hour % 12 + place.dateTime.minute / 60.0 - 3;
+    double angle = dateTime.hour % 12 + dateTime.minute / 60.0 - 3;
     Offset handOffset = Offset(cos(_getRadians(angle * 30)) * radius,
         sin(_getRadians(angle * 30)) * radius);
     final handPaint = Paint()
@@ -339,7 +400,7 @@ class ClockPainter extends CustomPainter {
 
   /// drawing minute hand
   void _paintMinuteHand(Canvas canvas, double radius, double strokeWidth) {
-    double angle = place.dateTime.minute - 15.0;
+    double angle = dateTime.minute - 15.0;
     Offset handOffset = Offset(cos(_getRadians(angle * 6.0)) * radius,
         sin(_getRadians(angle * 6.0)) * radius);
     final handPaint = Paint()
@@ -351,7 +412,7 @@ class ClockPainter extends CustomPainter {
   /// drawing second hand
   void _paintSecondHand(Canvas canvas, double radius, double strokeWidth) {
 
-    double angle = place.dateTime.second - 15.0;
+    double angle = dateTime.second - 15.0;
     Offset handOffset = Offset(cos(_getRadians(angle * 6.0)) * radius,
         sin(_getRadians(angle * 6.0)) * radius);
     final handPaint = Paint()
