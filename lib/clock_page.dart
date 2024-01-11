@@ -42,6 +42,10 @@ class _PaintClockState extends State<PaintClock>  with SingleTickerProviderState
   late AnimationController _controller;
   late Animation<Color?> _animationColor;
   late Animation<double> _animationDateTime;
+  final ScrollController _scrollController = ScrollController(
+    initialScrollOffset: 0,
+    keepScrollOffset: true,
+  );
 
   List<PlaceClock> places = [
     PlaceClock(
@@ -175,63 +179,68 @@ class _PaintClockState extends State<PaintClock>  with SingleTickerProviderState
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
-            child: GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                //mainAxisSpacing: 8,
-                crossAxisSpacing: 8,
-                childAspectRatio: 0.3,
-              ),
-              scrollDirection: Axis.horizontal,
-              itemCount: places.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: index == _index ? places[_index].color : Colors.grey[300],
-                      foregroundColor: index == _index ? Colors.white : places[index].color,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+            child: Scrollbar(
+              controller: _scrollController,
+              child: GridView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(4),
+                controller: _scrollController,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  //mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
+                  childAspectRatio: 0.3,
+                ),
+                scrollDirection: Axis.horizontal,
+                itemCount: places.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: index == _index ? places[_index].color : Colors.grey[300],
+                        foregroundColor: index == _index ? Colors.white : places[index].color,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
+                      child: Text('${places[index].flag} ${places[index].name}'),
+                      onPressed: () {
+                        setState(() {
+                          _animationColor = ColorTween(
+                            begin: places[_index].color,
+                            end: places[index].color,
+                          ).animate(_controller);
+
+                          DateTime previous = DateTime(
+                            places[_index].dateTime.year,
+                            places[_index].dateTime.month,
+                            places[_index].dateTime.day,
+                            places[_index].dateTime.hour,
+                            places[_index].dateTime.minute,
+                            places[_index].dateTime.second,
+                          );
+                          DateTime current = DateTime(
+                            places[index].dateTime.year,
+                            places[index].dateTime.month,
+                            places[index].dateTime.day,
+                            places[index].dateTime.hour,
+                            places[index].dateTime.minute,
+                            places[index].dateTime.second,
+                          );
+
+                          _animationDateTime = Tween<double>(
+                            begin: previous.millisecondsSinceEpoch.toDouble(),
+                            end: current.millisecondsSinceEpoch.toDouble(),
+                          ).animate(_controller);
+                          _index = index;
+                        });
+                        _controller.forward(from: 0,);
+                      },
                     ),
-                    child: Text('${places[index].flag} ${places[index].name}'),
-                    onPressed: () {
-                      setState(() {
-                        _animationColor = ColorTween(
-                          begin: places[_index].color,
-                          end: places[index].color,
-                        ).animate(_controller);
-
-                        DateTime previous = DateTime(
-                          places[_index].dateTime.year,
-                          places[_index].dateTime.month,
-                          places[_index].dateTime.day,
-                          places[_index].dateTime.hour,
-                          places[_index].dateTime.minute,
-                          places[_index].dateTime.second,
-                        );
-                        DateTime current = DateTime(
-                          places[index].dateTime.year,
-                          places[index].dateTime.month,
-                          places[index].dateTime.day,
-                          places[index].dateTime.hour,
-                          places[index].dateTime.minute,
-                          places[index].dateTime.second,
-                        );
-
-                        _animationDateTime = Tween<double>(
-                          begin: previous.millisecondsSinceEpoch.toDouble(),
-                          end: current.millisecondsSinceEpoch.toDouble(),
-                        ).animate(_controller);
-                        _index = index;
-                      });
-                      _controller.forward(from: 0,);
-                    },
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           )
         ),
