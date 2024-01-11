@@ -312,11 +312,8 @@ class ClockPainter extends CustomPainter {
 
     for (int i = 1; i <= 12; i++) {
 
-      int index = (i + 3) % 12;
-      if (index == 0) index = 12;
-
       textPainter.text = TextSpan(
-        text: '$index',
+        text: '$i',
         style: const TextStyle(
           color: Colors.black,
           fontSize: 20,
@@ -324,7 +321,8 @@ class ClockPainter extends CustomPainter {
         ),
       );
       textPainter.layout();
-      double angle = i * 30.0;
+
+      double angle = (i - 3) * 30;
       double x = cos(_getRadians(angle)) * (radius - 30) - textPainter.width / 2;
       double y = sin(_getRadians(angle)) * (radius - 30) - textPainter.height / 2;
       textPainter.paint(canvas, Offset(x, y));
@@ -389,9 +387,9 @@ class ClockPainter extends CustomPainter {
 
   /// drawing hour hand
   void _paintHourHand(Canvas canvas, double radius, double strokeWidth) {
-    double angle = dateTime.hour % 12 + dateTime.minute / 60.0 - 3;
-    Offset handOffset = Offset(cos(_getRadians(angle * 30)) * radius,
-        sin(_getRadians(angle * 30)) * radius);
+    double angle = (dateTime.hour % 12 + dateTime.minute / 60.0 - 3) * 30;
+    Offset handOffset = Offset(cos(_getRadians(angle)) * radius,
+        sin(_getRadians(angle)) * radius);
     final handPaint = Paint()
       ..color = Colors.black
       ..strokeWidth = strokeWidth;
@@ -400,9 +398,9 @@ class ClockPainter extends CustomPainter {
 
   /// drawing minute hand
   void _paintMinuteHand(Canvas canvas, double radius, double strokeWidth) {
-    double angle = dateTime.minute - 15.0;
-    Offset handOffset = Offset(cos(_getRadians(angle * 6.0)) * radius,
-        sin(_getRadians(angle * 6.0)) * radius);
+    double angle = (dateTime.minute - 15.0) * 6.0;
+    Offset handOffset = Offset(cos(_getRadians(angle)) * radius,
+        sin(_getRadians(angle)) * radius);
     final handPaint = Paint()
       ..color = Colors.black
       ..strokeWidth = strokeWidth;
@@ -413,8 +411,8 @@ class ClockPainter extends CustomPainter {
   void _paintSecondHand(Canvas canvas, double radius, double strokeWidth) {
 
     double angle = dateTime.second - 15.0;
-    Offset handOffset = Offset(cos(_getRadians(angle * 6.0)) * radius,
-        sin(_getRadians(angle * 6.0)) * radius);
+    Offset handOffset = Offset(cos(_getRadians(angle)) * radius,
+        sin(_getRadians(angle)) * radius);
     final handPaint = Paint()
       ..color = Colors.red
       ..strokeWidth = strokeWidth;
